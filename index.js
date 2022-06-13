@@ -1,27 +1,49 @@
 (()=>{
 const btn = document.querySelector('[data-form-btn]');
 
-const createTask = (evento) => {
-  evento.preventDefault();
-  const input = document.querySelector('[data-form-input]');
-  const value = input.value;
+const addTask = (event) => {
+  event.preventDefault();
   const list = document.querySelector('[data-list]');
-  const task = document.createElement('li');
-  task.classList.add('card');
+  const input = document.querySelector('[data-form-input]');
+  const calendar = document.querySelector('[data-form-date');
+
+  const value = input.value;
+  const date = calendar.value;
+  const dateFormat = moment(date).format('DD/MM/YYYY');
+
   input.value = '';
+  calendar.value = "";
+  const taskObj = {
+    value,
+    dateFormat
+  };
+  const taskList = JSON.parse(localStorage.getItem('tasks')) || [];
+  taskList.push(taskObj);
+  localStorage.setItem('tasks', JSON.stringify(taskList));
+  const task = createTask(taskObj);
+  list.appendChild(task);
+};
+
+const createTask = ({value, dateFormat}) => {
+  
+  const task = document.createElement('li');
+        task.classList.add('card');
   //backticks
   const taskContent = document.createElement('div');
+  
+  const dateElement = document.createElement('span');
+        dateElement.innerHTML = dateFormat;
 
   const titleTask = document.createElement('span');
-  titleTask.classList.add('task');
-  titleTask.innerText = value;
-  taskContent.appendChild(checkComplete());
-  taskContent.appendChild(titleTask);
+        titleTask.classList.add('task');
+        titleTask.innerText = value;
+        taskContent.appendChild(checkComplete());
+        taskContent.appendChild(titleTask);
   // task.innerHTML = content;
-
-  task.appendChild(taskContent);
-  task.appendChild(deleteIcon());
-  list.appendChild(task);
+        task.appendChild(taskContent);
+        task.appendChild(dateElement);
+        task.appendChild(deleteIcon());
+  return task;
 };
 
 const checkComplete = () => {
@@ -51,5 +73,5 @@ const deleteTask = (event) => {
 };
 
 //Arrow functions o funciones anonimas
-btn.addEventListener('click', createTask);
+btn.addEventListener('click', addTask);
 })();
